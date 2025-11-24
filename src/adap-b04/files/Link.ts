@@ -1,5 +1,6 @@
 import { Node } from "./Node";
 import { Directory } from "./Directory";
+import { InvalidStateException } from "../common/InvalidStateException";
 
 export class Link extends Node {
 
@@ -32,7 +33,7 @@ export class Link extends Node {
     }
 
     protected ensureTargetNode(target: Node | null): Node {
-        const result: Node = this.targetNode as Node;
-        return result;
+        InvalidStateException.assert(target !== null, "Target node must be set");
+        return target as Node;
     }
 }

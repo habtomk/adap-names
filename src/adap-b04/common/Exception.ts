@@ -1,5 +1,3 @@
-import { InvalidStateException } from "./InvalidStateException";
-
 /**
  * Root class for exceptions in ADAP examples
  */
@@ -20,8 +18,12 @@ export abstract class Exception extends Error {
     }
 
     public getTrigger(): Exception {
-        // @todo check if trigger is null
-        return this.trigger as Exception;
+        if (this.trigger == null) {
+            // Lazy import to avoid circular dependency at module load time
+            const { InvalidStateException } = require("./InvalidStateException");
+            throw new InvalidStateException("Trigger is not set");
+        }
+        return this.trigger;
     }
 
 }
