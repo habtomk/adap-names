@@ -1,69 +1,57 @@
 import { DEFAULT_DELIMITER, ESCAPE_CHARACTER } from "../common/Printable";
 import { Name } from "./Name";
 import { AbstractName } from "./AbstractName";
+import { IllegalArgumentException } from "../common/IllegalArgumentException";
 
 export class StringArrayName extends AbstractName {
 
     protected components: string[] = [];
 
     constructor(source: string[], delimiter?: string) {
-        super();
-        throw new Error("needs implementation or deletion");
-    }
-
-    public clone(): Name {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public asString(delimiter: string = this.delimiter): string {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public asDataString(): string {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public isEqual(other: Name): boolean {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public getHashCode(): number {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public isEmpty(): boolean {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public getDelimiterCharacter(): string {
-        throw new Error("needs implementation or deletion");
+        super(delimiter);
+        this.components = [...source];
     }
 
     public getNoComponents(): number {
-        throw new Error("needs implementation or deletion");
+        return this.components.length;
     }
 
     public getComponent(i: number): string {
-        throw new Error("needs implementation or deletion");
+        this.checkIndex(i);
+        return this.components[i];
     }
 
     public setComponent(i: number, c: string) {
-        throw new Error("needs implementation or deletion");
+        this.checkIndex(i);
+        this.components[i] = c;
     }
 
     public insert(i: number, c: string) {
-        throw new Error("needs implementation or deletion");
+        this.checkIndex(i, true);
+        this.components.splice(i, 0, c);
     }
 
     public append(c: string) {
-        throw new Error("needs implementation or deletion");
+        this.components.push(c);
     }
 
     public remove(i: number) {
-        throw new Error("needs implementation or deletion");
+        this.checkIndex(i);
+        this.components.splice(i, 1);
     }
 
-    public concat(other: Name): void {
-        throw new Error("needs implementation or deletion");
+    protected createInstance(components: string[], delimiter: string): AbstractName {
+        return new StringArrayName(components, delimiter);
+    }
+
+    protected snapshotComponents(): string[] {
+        return [...this.components];
+    }
+
+    private checkIndex(i: number, allowEnd: boolean = false) {
+        const max = allowEnd ? this.components.length : this.components.length - 1;
+        if (i < 0 || (this.components.length > 0 && i > max) || (this.components.length === 0 && !allowEnd)) {
+             throw new IllegalArgumentException("Index out of bounds");
+        }
     }
 }

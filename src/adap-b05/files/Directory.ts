@@ -1,4 +1,6 @@
 import { Node } from "./Node";
+import { ServiceFailureException } from "../common/ServiceFailureException";
+import { Exception } from "../common/Exception";
 
 export class Directory extends Node {
 
@@ -18,6 +20,25 @@ export class Directory extends Node {
 
     public removeChildNode(cn: Node): void {
         this.childNodes.delete(cn); // Yikes! Should have been called remove
+    }
+
+    public findNodes(bn: string): Set<Node> {
+        try {
+            const result = super.findNodes(bn);
+
+            for (const child of this.childNodes) {
+                const childResults = child.findNodes(bn);
+                for (const node of childResults) {
+                    result.add(node);
+                }
+            }
+            return result;
+        } catch (error) {
+            if (error instanceof ServiceFailureException) {
+                throw error;
+            }
+            throw new ServiceFailureException("Failed to find nodes", error as Exception);
+        }
     }
 
 }

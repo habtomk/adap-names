@@ -1,8 +1,12 @@
 import { IllegalArgumentException } from "../common/IllegalArgumentException";
 import { InvalidStateException } from "../common/InvalidStateException";
+import { MethodFailedException } from "../common/MethodFailedException";
+
 
 import { Name } from "../names/Name";
-import { Directory } from "./Directory";
+// import { Directory } from "./Directory";
+import type { Directory } from "./Directory";
+
 
 export class Node {
 
@@ -33,7 +37,12 @@ export class Node {
     }
 
     public getBaseName(): string {
-        return this.doGetBaseName();
+        // return this.doGetBaseName();
+        const bn = this.doGetBaseName();
+        if ((this.parentNode as unknown as Node) !== this && bn === "") {
+            throw new InvalidStateException("invalid state: base name is empty");
+        }
+        return bn;
     }
 
     protected doGetBaseName(): string {
@@ -52,12 +61,15 @@ export class Node {
         return this.parentNode;
     }
 
-    /**
-     * Returns all nodes in the tree that match bn
-     * @param bn basename of node being searched for
-     */
     public findNodes(bn: string): Set<Node> {
-        throw new Error("needs implementation or deletion");
+        const result = new Set<Node>();
+        try {
+            if (this.getBaseName() === bn) {
+                result.add(this);
+            }
+        } catch (e) {
+            throw e;
+        }
+        return result;
     }
-
 }
